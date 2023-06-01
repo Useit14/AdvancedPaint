@@ -151,6 +151,8 @@
             this.checkedListBoxRectangles.Name = "checkedListBoxRectangles";
             this.checkedListBoxRectangles.Size = new System.Drawing.Size(288, 191);
             this.checkedListBoxRectangles.TabIndex = 14;
+            this.checkedListBoxRectangles.ItemCheck += checkBoxRectangle_CheckedChanged;
+
             // 
             // checkedListBoxCircles
             // 
