@@ -64,7 +64,7 @@ namespace AdvancedPaint
                     CheckBox checkBoxRectangle = new CheckBox();
                     checkedListBoxRectangles.Items.Add("Прямоугольник" + (checkedListBoxRectangles.Items.Count + i + 1));
                     checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1, true);
-                    checkedListBoxRectangles.ItemCheck += checkBoxRectangle_CheckedChanged;
+                    
 
                 }
 
@@ -78,8 +78,8 @@ namespace AdvancedPaint
         {
             for (int i = 0; i < checkedListBoxRectangles.Items.Count; i++)
             {
-                var isCurrentCheckbox = checkedListBoxRectangles.GetItemChecked(i);
-                if (isCurrentCheckbox)
+                var isCheckedCheckbox = checkedListBoxRectangles.GetItemChecked(i);
+                if (isCheckedCheckbox)
                 {
                     container.ActivateRectangle(i);
                 }
