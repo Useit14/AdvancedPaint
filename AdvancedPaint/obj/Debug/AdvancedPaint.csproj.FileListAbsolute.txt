@@ -1,0 +1,12 @@
+C:\Users\User\source\repos\AdvancedPaint\bin\Debug\AdvancedPaint.exe.config
+C:\Users\User\source\repos\AdvancedPaint\bin\Debug\AdvancedPaint.exe
+C:\Users\User\source\repos\AdvancedPaint\bin\Debug\AdvancedPaint.pdb
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.csproj.AssemblyReference.cache
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.csproj.SuggestedBindingRedirects.cache
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.Form1.resources
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.Properties.Resources.resources
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.csproj.GenerateResource.cache
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.exe
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.pdb
+C:\Users\User\source\repos\AdvancedPaint\obj\Debug\AdvancedPaint.AboutFigure.resources
