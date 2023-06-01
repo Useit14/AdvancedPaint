@@ -1,17 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace AdvancedPaint
 {
+    [DataContract]
+    [KnownType(typeof(Container))]
     public class Container: IEnumerable
     {
-        protected List<Figure> figures = new List<Figure>();
+        [DataMember]
+        public List<Figure> figures = new List<Figure>();
+
+        public Container()
+        {
+
+        }
 
         public IEnumerator GetEnumerator()
         {
 
             return figures.GetEnumerator();
 
+        
+        }
+
+        public List<Figure> GetList()
+        {
+            return figures;
+        }
+
+        public void SetList(List<Figure> _figures)
+        {
+            figures = _figures;
         }
 
         public void AddItem(Figure figure)

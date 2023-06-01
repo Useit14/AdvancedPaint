@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using CheckBox = System.Windows.Forms.CheckBox;
+using System.Runtime.Serialization;
+using System.Collections.Generic;
+using System.Runtime.Serialization.Json;
 
 namespace AdvancedPaint
 {
@@ -19,15 +16,19 @@ namespace AdvancedPaint
             InitializeComponent();
         }
 
-        protected int countRectangle;
-        protected int countCircle;
-        protected int countTractor;
-        protected Point PointStart;
-        protected Point PointEnd;
-        Container container = new Container();
-        Figure figureMove;
-        protected bool IsMouseDown = false;
-        protected bool IsBelong = false;
+         int countRectangle;
+         int countCircle;
+         int countTractor;
+        int maxWidthFigure = 200;
+        int maxHeightFigure = 200;
+         Point PointStart;
+         Point PointEnd;
+         Container container = new Container();
+         Figure figureMove;
+         bool IsMouseDown = false;
+         bool IsBelong = false;
+        DataContractJsonSerializer json;
+
 
         private void numericUpDownRectangle_ValueChanged(object sender, EventArgs e)
         {
@@ -74,7 +75,8 @@ namespace AdvancedPaint
             }
         }
 
-        private void checkBoxRectangle_CheckedChanged(object sender, EventArgs e)
+
+        private void checkedListBoxRectangles_SelectedIndexChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < checkedListBoxRectangles.Items.Count; i++)
             {
@@ -88,9 +90,8 @@ namespace AdvancedPaint
                     container.DeactivateRectangle(i);
                 }
             }
-            
-             panel1.Refresh();
-                
+
+            panel1.Refresh();
         }
 
         private void numericUpDownCircle_ValueChanged(object sender, EventArgs e)
@@ -125,9 +126,8 @@ namespace AdvancedPaint
                 for (int i = 0; i < countCircle - countCirclesInContainer; i++)
                 {
                     CircleDraw();
-                    CheckBox checkBoxCircle = new CheckBox();
-                    checkedListBoxCircles.Items.Add("Круг");
-                    checkedListBoxCircles.ItemCheck  += checkBoxCircle_CheckedChanged;
+                    checkedListBoxCircles.Items.Add("Круг" + (checkedListBoxCircles.Items.Count + i + 1));
+                    checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true);
                 }
             } catch (ArgumentOutOfRangeException ex)
             {
@@ -135,9 +135,8 @@ namespace AdvancedPaint
             }
         }
 
-        private void checkBoxCircle_CheckedChanged(object sender, EventArgs e)
+        private void checkedListBoxCircles_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             for (int i = 0; i < checkedListBoxCircles.Items.Count; i++)
             {
                 bool isCurrentChecked = checkedListBoxCircles.GetItemChecked(i);
@@ -151,6 +150,7 @@ namespace AdvancedPaint
                 }
             }
             panel1.Refresh();
+
         }
 
         private void numericUpDownTractor_ValueChanged(object sender, EventArgs e)
@@ -185,15 +185,9 @@ namespace AdvancedPaint
                 for (int i = 0; i < countTractor - countTractorsInContainer; i++)
                 {
                     TractorDraw();
-                    CheckBox checkBoxTractor = new CheckBox();
-                    checkedListBoxTractors.Items.Add("Трактор");
-                    checkedListBoxTractors.ItemCheck += checkBoxTractor_CheckedChanged;
+                    checkedListBoxTractors.Items.Add("Трактор" + (checkedListBoxTractors.Items.Count + i + 1));
+                    checkedListBoxTractors.SetItemChecked(checkedListBoxTractors.Items.Count - 1, true);
                 }
-
-
-
-
-
 
             } catch (ArgumentOutOfRangeException ex)
             {
@@ -201,7 +195,8 @@ namespace AdvancedPaint
             }
         }
 
-        private void checkBoxTractor_CheckedChanged(object sender, EventArgs e)
+
+        private void checkedListBoxTractors_SelectedIndexChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < checkedListBoxTractors.Items.Count; i++)
             {
@@ -216,7 +211,6 @@ namespace AdvancedPaint
                 }
             }
             panel1.Refresh();
-
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -249,10 +243,10 @@ namespace AdvancedPaint
 
                     Color color = Color.FromArgb(red, green, blue);
 
-                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width) - 100);
-                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height) - 100);
-                    int width = randomWidth.Next(50, panel1.Width - PointStart.X);
-                    int height = randomHeight.Next(50, panel1.Height - PointStart.Y);
+                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width) - 200);
+                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height) - 200);
+                    int width = randomWidth.Next(50, 200);
+                    int height = randomHeight.Next(50, 200);
 
                     myRectangle = new MyRectangle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
                     container.AddItem(myRectangle);
@@ -283,10 +277,10 @@ namespace AdvancedPaint
                     Color color = Color.FromArgb(red, green, blue);
                     int thickness = randomNumber.Next(1, 10);
 
-                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 100));
-                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 100));
-                    int width = (randomWidth.Next(50, panel1.Width - PointStart.X));
-                    int height = (randomHeight.Next(50, panel1.Height - PointStart.Y));
+                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
+                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
+                    int width = (randomWidth.Next(50, 200));
+                    int height = (randomHeight.Next(50, 200));
 
                     myCircle = new MyCircle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
                     container.AddItem(myCircle);
@@ -315,16 +309,35 @@ namespace AdvancedPaint
                     int blue = randomColor.Next(256);
 
                     Color color = Color.FromArgb(red, green, blue);
-                    int thickness = randomNumber.Next(1, 10);
+                    Brush brush = new SolidBrush(color);
 
-                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 100));
-                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 100));
-                    int width = randomWidth.Next(50, panel1.Width - PointStart.X);
-                    int height = randomHeight.Next(50, panel1.Height - PointStart.Y);
+                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
+                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
+                    int width = randomWidth.Next(50, 200);
+                    int height = randomHeight.Next(50, 200);
 
-                    myTractor = new MyTractor(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
+                    myTractor = new MyTractor(PointStart.X, PointStart.Y, height, width, brush);
+
+                    MyRectangle myRectangle1 = new MyRectangle(PointStart.X, PointStart.Y - height, height, width / 6, brush);
+                    myRectangle1.brush = myRectangle1.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+
+                    MyRectangle myRectangle2 = new MyRectangle(PointStart.X, PointStart.Y, height, width, brush);
+                    myRectangle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+
+                    MyCircle myCircle1 = new MyCircle(PointStart.X, PointStart.Y + height, height / 2, width / 2, brush);
+                    myCircle1.brush = myCircle1.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+
+                    MyCircle myCircle2 = new MyCircle(PointStart.X + width / 2, PointStart.Y + height, height / 2, width / 2, brush);
+                    myCircle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+
+                    myTractor.container.AddItem(myRectangle1);
+                    myTractor.container.AddItem(myRectangle2);
+                    myTractor.container.AddItem(myCircle1);
+                    myTractor.container.AddItem(myCircle2);
+
+
                     container.AddItem(myTractor);
-                panel1.Refresh();
+                    panel1.Refresh();
             } catch (IndexOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message);
@@ -346,8 +359,17 @@ namespace AdvancedPaint
             {
                 if (f.IsPointInside(e.X, e.Y) && f.isActive)
                 {
-                    AboutFigure aboutFigure = new AboutFigure(f,container,panel1);
-                    aboutFigure.Show();
+                    if(f is MyRectangle || f is MyCircle)
+                    {
+                        EditorRectangleOrCirlce editorRectangleOrCirlce = new EditorRectangleOrCirlce(f, container, panel1);
+                        editorRectangleOrCirlce.Show();
+                    }
+                    else
+                    {
+                        EditTractor editTractor = new EditTractor(f, container, panel1);
+                        editTractor.Show();
+                    }
+                    panel1.Refresh();
                     return;
                 }
             }
@@ -383,12 +405,50 @@ namespace AdvancedPaint
                 }
                 IsMouseDown = false;
 
-                figureMove.x = PointEnd.X;
-                figureMove.y = PointEnd.Y;
-
+                figureMove.Move(PointEnd.X, PointEnd.Y);
 
                 panel1.Refresh();
             }
+        }
+
+
+        private void ToolStripMenuItemSave_Click(object sender, EventArgs e)
+        {
+            string filePath = GetFilePathFromDialog();
+            json = new DataContractJsonSerializer(typeof(List<Figure>));
+            using (var file = new FileStream(filePath, FileMode.OpenOrCreate))
+            {
+                json.WriteObject(file, container);
+            }
+
+        }
+
+        private void ToolStripMenuItemLoad_Click(object sender, EventArgs e)
+        {
+            string filePath = GetFilePathFromDialog();
+            json = new DataContractJsonSerializer(typeof(List<Figure>));
+
+            using (var file = new FileStream(filePath, FileMode.OpenOrCreate))
+            {
+                container.SetList((List<Figure>)json.ReadObject(file)); 
+            }
+        }
+
+        private string GetFilePathFromDialog()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // Задание фильтра файлов
+
+            // Отображение диалогового окна
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Возврат выбранного пути
+                return openFileDialog.FileName;
+            }
+
+            // Если пользователь не выбрал файл, возвращаем пустую строку или null
+            return string.Empty;
         }
 
     }

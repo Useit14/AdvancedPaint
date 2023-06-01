@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AdvancedPaint
 {
+
+    [DataContract]
+    [KnownType(typeof(MyRectangle))]
     public class MyRectangle:Figure
     {
         public MyRectangle(int PointStartX, int PointStartY, int height, int width, Brush brush)

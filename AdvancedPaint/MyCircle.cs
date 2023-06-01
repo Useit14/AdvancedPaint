@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AdvancedPaint
 {
+
     public class MyCircle: Figure
     {
         public MyCircle(int PointStartX, int PointStartY, int height, int width, Brush brush)
@@ -27,7 +29,7 @@ namespace AdvancedPaint
             rectangle.Y = y;
             rectangle.Height = height;
             rectangle.Width = width;
-            gr.FillEllipse(brush, rectangle);
+            gr.FillEllipse(isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray)), rectangle);
         }
 
         public override void Move(int pointX, int pointY)

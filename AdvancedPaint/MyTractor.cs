@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AdvancedPaint
 {
+
     public class MyTractor:Figure
     {
-        Figure myRectangle1;
-        Figure myRectangle2;
-        Figure myCircle1;
-        Figure myCircle2;
+
         public MyTractor(int PointStartX, int PointStartY, int height, int width, Brush brush)
         {
 
@@ -21,18 +21,16 @@ namespace AdvancedPaint
             this.height = height;
             this.width = width;
             this.brush = brush;
+            container = new Container();
         }
 
         public override void Draw(Graphics gr)
         {
-            myRectangle1 = new MyRectangle(x, y-height, height, width/6,brush);
-            myRectangle2 = new MyRectangle(x, y, height, width, brush);
-            myCircle1 = new MyCircle(x, y + height, height / 2, width / 2,brush);
-            myCircle2 = new MyCircle(x + width / 2, y + height, height / 2, width / 2, brush);
-            myRectangle1.Draw(gr);
-            myRectangle2.Draw(gr);
-            myCircle1.Draw(gr);
-            myCircle2.Draw(gr);
+            foreach (Figure f in container)
+            {
+                f.Draw(gr);
+            }
+
         }
 
         public override void Move(int pointX, int pointY)
@@ -40,10 +38,37 @@ namespace AdvancedPaint
             x = pointX;
             y = pointY;
 
+            int count = 0;
+
+            foreach (Figure f in container)
+            {
+                switch (count)
+                {
+                    case 0:
+                        f.x = pointX;
+                        f.y = pointY - height;
+                        break;
+                    case 1:
+                        f.x = pointX;
+                        f.y = pointY;
+                        break;
+                    case 2:
+                        f.x = pointX;
+                        f.y = pointY + height;
+                        break;
+                    case 3:
+                        f.x = pointX + width / 2;
+                        f.y = pointY + height;
+                        break;
+                }
+                count++;
+            }
+
         }
 
         public override bool IsPointInside(int pointX, int pointY)
         {
+
             if ((pointX <= x + width) && (pointX >= x) && ((pointY <= (y + height) + height / 2) && (pointY >= y)))
             {
                 return true;
@@ -53,5 +78,6 @@ namespace AdvancedPaint
                 return false;
             }
         }
+
     }
 }
