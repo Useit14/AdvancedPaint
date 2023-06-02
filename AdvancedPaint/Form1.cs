@@ -3,9 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using CheckBox = System.Windows.Forms.CheckBox;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Json;
 using System.Text.RegularExpressions;
 using System.Linq;
 
@@ -18,17 +16,17 @@ namespace AdvancedPaint
             InitializeComponent();
         }
 
-         int countRectangle; 
-         int countCircle;
-         int countTractor;
-         Point PointStart;
-         Point PointEnd;
-         Container container = new Container();
-         Figure figureMove;
-         bool IsMouseDown = false;
-         bool IsChangedRectangle = false;
-        bool IsChangedCircle = false;
-        bool IsChangedTractor = false;
+        int countRectangle; //переменная фактического количества прямоугольников
+        int countCircle; //переменная фактического количества кругов
+        int countTractor; //переменная фактического количества тракторов
+        Point PointStart; // переменная, в которой находится начальная координа
+        Point PointEnd; // переменная, в которой находится конечная координа
+        Container container = new Container(); // объект класса Container (в нем хранятся все фигуры)
+        Figure figureMove; // переменная для фигуры, которую перемещаем
+        bool IsMouseDown = false; // логический флаг: зажата мышь или нет
+        bool IsChangedRectangle = false; // логический флаг: изненены состояния чекбоксов прямоугольников
+        bool IsChangedCircle = false; // логический флаг: изненены состояния чекбоксов кругов
+        bool IsChangedTractor = false; // логический флаг: изненены состояния чекбоксов машин
 
 
 
@@ -36,138 +34,139 @@ namespace AdvancedPaint
         {
             try
             {
-                IsChangedRectangle = true;
+                IsChangedRectangle = true; // изменяем состояние изменений
 
-                int countRectanglesInContainer = container.getCountRectange();
-                countRectangle = int.Parse(numericUpDownRectangle.Value.ToString());
+                int countRectanglesInContainer = container.getCountRectange(); // находим количество прямоугольников в контейнера
+                countRectangle = int.Parse(numericUpDownRectangle.Value.ToString()); // берем новое значение количества прямоугольников из numeric
 
-                if (countRectangle < 0 || countRectangle > 10)
+                if (countRectangle < 0 || countRectangle > 10) // если количество прямоугов отрицательно или больше 10 бросаем ошибку
                 {
-                    numericUpDownRectangle.Value = 10;
+                    numericUpDownRectangle.Value = 10; // устанавливаем значением numeric на 10
                     throw new ArgumentOutOfRangeException("Количество фигур должно быть неотрицательным и меньше 10");
                 }
 
                 if (countRectanglesInContainer > countRectangle) //изменение в меньшую сторону
                 {
-                    for (int i = 0; i < countRectanglesInContainer - countRectangle; i++)
+                    for (int i = 0; i < countRectanglesInContainer - countRectangle; i++) // циклически проходимся столько раз сколько новых фигурок удалилось
                     {
-                        container.removeRectangle();
+                        container.removeRectangle(); //удаляем прямоугольник
 
-                        if (checkedListBoxRectangles.Items.Count > 0)
+                        if (checkedListBoxRectangles.Items.Count > 0) // если количество чекбоксов прямоугольников больше 0
                         {
-                            checkedListBoxRectangles.Items.RemoveAt(checkedListBoxRectangles.Items.Count-1);
+                            checkedListBoxRectangles.Items.RemoveAt(checkedListBoxRectangles.Items.Count - 1); // удаляем последний чекбокс прямоугольников
                         }
-                        
-                        panel1.Refresh();
+
+                        panel1.Refresh(); // перерисовываем панель
                     }
                     return;
                 }
 
-                for (int i = 0 ; i < countRectangle - countRectanglesInContainer; i++)
+                for (int i = 0; i < countRectangle - countRectanglesInContainer; i++)  // циклически проходимся столько раз сколько новых фигурок добавилось
                 {
-                    RectangleDraw();
-                    CheckBox checkBoxRectangle = new CheckBox();
-                    checkedListBoxRectangles.Items.Add("Прямоугольник");
-                    checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1, true);
-                    
+                    RectangleDraw(); // добавляем прямоугольник в контейнер
+                    checkedListBoxRectangles.Items.Add("Прямоугольник"); //создаем новый чекбокс прямоугольника
+                    checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1, true); // чекаем последний чекбокс прямоугольников
+
 
                 }
 
-                if (checkedListBoxRectangles.CheckedItems.Count == 0)
+                if (checkedListBoxRectangles.CheckedItems.Count == 0) // если количество чекбоксов прямоугольника равно 0, то состояние изменений устанавливаем на false
                 {
                     IsChangedRectangle = false;
                 }
 
-            } catch (ArgumentOutOfRangeException ex)
+            }
+            catch (ArgumentOutOfRangeException ex) // ловим ошибку количетсва в numeric меньше 0 больше 10
             {
                 MessageBox.Show(ex.Message);
             }
         }
 
 
-        private void checkedListBoxRectangles_SelectedIndexChanged(object sender, EventArgs e)
+        private void checkedListBoxRectangles_SelectedIndexChanged(object sender, EventArgs e) //обработчик события чека чекбоксов прямоугольников
         {
-            for (int i = 0; i < checkedListBoxRectangles.Items.Count; i++)
+            for (int i = 0; i < checkedListBoxRectangles.Items.Count; i++) // проходимся по чекбоксам прямоугольников
             {
-                var isCheckedCheckbox = checkedListBoxRectangles.GetItemChecked(i);
-                if (isCheckedCheckbox)
+                var isCheckedCheckbox = checkedListBoxRectangles.GetItemChecked(i); // кладем в переменуюю состояние итеррируемого чекбокса
+                if (isCheckedCheckbox) // если чекбокс выбран 
                 {
-                    container.ActivateRectangle(i);
+                    container.ActivateRectangle(i); //активируем фигуру
                 }
                 else
                 {
-                    container.DeactivateRectangle(i);
+                    container.DeactivateRectangle(i); // иначе деактивируем
                 }
             }
 
-            panel1.Refresh();
+            panel1.Refresh(); // перерисовываем панель
         }
 
         private void numericUpDownCircle_ValueChanged(object sender, EventArgs e)
         {
             try
             {
-                IsChangedCircle = true;
-                
-                int countCirclesInContainer = container.getCountCircle();
-                countCircle = int.Parse(numericUpDownCircle.Value.ToString());
+                IsChangedCircle = true; // изменяем состояние изменений
 
-                if (countCircle < 0 || countCircle > 10)
+                int countCirclesInContainer = container.getCountCircle(); // находим количество кругов в контейнера
+                countCircle = int.Parse(numericUpDownCircle.Value.ToString()); // берем новое значение количества кругов из numeric
+
+                if (countCircle < 0 || countCircle > 10) // если количество прямоугов отрицательно или больше 10 бросаем ошибку
                 {
-                    numericUpDownCircle.Value = 0;
+                    numericUpDownCircle.Value = 10;  // устанавливаем значением numeric на 10
                     throw new ArgumentOutOfRangeException("Количество фигур должно быть неотрицательным и меньше 10");
                 }
 
                 if (countCirclesInContainer > countCircle) //изменение в меньшую сторону
                 {
-                    for (int i = 0; i < countCirclesInContainer - countCircle; i++)
+                    for (int i = 0; i < countCirclesInContainer - countCircle; i++) // циклически проходимся столько раз сколько новых фигурок удалилось
                     {
-                        container.removeCircle();
+                        container.removeCircle(); //удаляем круг
 
-                        if (checkedListBoxCircles.Items.Count > 0)
+                        if (checkedListBoxCircles.Items.Count > 0) // если количество чекбоксов кругов больше 0
                         {
-                            checkedListBoxCircles.Items.RemoveAt(checkedListBoxCircles.Items.Count - 1);
+                            checkedListBoxCircles.Items.RemoveAt(checkedListBoxCircles.Items.Count - 1); // удаляем последний чекбокс кругов
                         }
 
-                        panel1.Refresh();
+                        panel1.Refresh(); // перерисовываем панель
                     }
                     return;
                 }
 
-                for (int i = 0; i < countCircle - countCirclesInContainer; i++)
+                for (int i = 0; i < countCircle - countCirclesInContainer; i++)  // циклически проходимся столько раз сколько новых фигурок добавилось
                 {
-                    CircleDraw();
-                    checkedListBoxCircles.Items.Add("Круг");
-                    checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true);
-                
+                    CircleDraw(); // добавляем круг в контейнер фигур
+                    checkedListBoxCircles.Items.Add("Круг"); //создаем новый чекбокс круга
+                    checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true); // чекаем последний чекбокс кругов
+
                 }
 
-                if (checkedListBoxCircles.CheckedItems.Count == 0)
+                if (checkedListBoxCircles.CheckedItems.Count == 0) // если количество чекбоксов кругов равно 0, то состояние изменений устанавливаем на false
                 {
                     IsChangedCircle = false;
                 }
 
-            } catch (ArgumentOutOfRangeException ex)
+            }
+            catch (ArgumentOutOfRangeException ex) // ловим ошибку количетсва в numeric меньше 0 больше 10
             {
                 MessageBox.Show(ex.Message);
             }
         }
 
-        private void checkedListBoxCircles_SelectedIndexChanged(object sender, EventArgs e)
+        private void checkedListBoxCircles_SelectedIndexChanged(object sender, EventArgs e) //обработчик события чека чекбоксов кругов
         {
-            for (int i = 0; i < checkedListBoxCircles.Items.Count; i++)
+            for (int i = 0; i < checkedListBoxCircles.Items.Count; i++) // проходимся по чекбоксам кругов
             {
-                bool isCurrentChecked = checkedListBoxCircles.GetItemChecked(i);
-                if (isCurrentChecked)
+                bool isCurrentChecked = checkedListBoxCircles.GetItemChecked(i);  // кладем в переменуюю состояние итеррируемого чекбокса
+                if (isCurrentChecked) // если чекбокс выбран 
                 {
-                    container.ActivateCircle(i);
+                    container.ActivateCircle(i); //активируем фигуру
                 }
                 else
                 {
-                    container.DeactivateCircle(i);
+                    container.DeactivateCircle(i); // иначе деактивируем
                 }
             }
-            panel1.Refresh();
+            panel1.Refresh(); // перерисовываем панель
 
         }
 
@@ -175,26 +174,26 @@ namespace AdvancedPaint
         {
             try
             {
-                IsChangedTractor = true;
+                IsChangedTractor = true; // изменяем состояние изменений
 
-                int countTractorsInContainer = container.getCountTractor();
-                countTractor = int.Parse(numericUpDownTractor.Value.ToString());
+                int countTractorsInContainer = container.getCountTractor(); // находим количество тракторов в контейнера
+                countTractor = int.Parse(numericUpDownTractor.Value.ToString()); // берем новое значение количества тракторов из numeric
 
-                if (countTractor < 0 || countTractor > 10)
+                if (countTractor < 0 || countTractor > 10) // если количество прямоугов отрицательно или больше 10 бросаем ошибку
                 {
-                    numericUpDownTractor.Value = 10;
+                    numericUpDownTractor.Value = 10; // устанавливаем значением numeric на 10
                     throw new ArgumentOutOfRangeException("Количество фигур должно быть неотрицательным и меньше 10");
                 }
 
                 if (countTractorsInContainer > countTractor) //изменение в меньшую сторону
                 {
-                    for (int i = 0; i < countTractorsInContainer - countCircle; i++)
+                    for (int i = 0; i < countTractorsInContainer - countCircle; i++) // циклически проходимся столько раз сколько новых фигурок удалилось
                     {
-                        container.removeTractor();
+                        container.removeTractor(); //удаляем трактор
 
-                        if (checkedListBoxTractors.Items.Count > 0)
+                        if (checkedListBoxTractors.Items.Count > 0) // если количество тракторов кругов больше 0
                         {
-                            checkedListBoxTractors.Items.RemoveAt(checkedListBoxTractors.Items.Count - 1);
+                            checkedListBoxTractors.Items.RemoveAt(checkedListBoxTractors.Items.Count - 1); // удаляем последний чекбокс трактора
                         }
                         panel1.Refresh();
 
@@ -202,40 +201,42 @@ namespace AdvancedPaint
                     return;
                 }
 
-                for (int i = 0; i < countTractor - countTractorsInContainer; i++)
+                for (int i = 0; i < countTractor - countTractorsInContainer; i++)  // циклически проходимся столько раз сколько новых фигурок добавилось
                 {
-                    TractorDraw();
-                    checkedListBoxTractors.Items.Add("Трактор");
-                    checkedListBoxTractors.SetItemChecked(checkedListBoxTractors.Items.Count - 1, true);
+                    TractorDraw(); // добавляем трактор в контейнер фигур
+                    checkedListBoxTractors.Items.Add("Трактор"); //создаем новый чекбокс трактора
+                    checkedListBoxTractors.SetItemChecked(checkedListBoxTractors.Items.Count - 1, true); // чекаем последний чекбокс тракторов
                 }
 
-                if (checkedListBoxTractors.CheckedItems.Count == 0)
+                if (checkedListBoxTractors.CheckedItems.Count == 0) // если количество чекбоксов тракторов равно 0, то состояние изменений устанавливаем на false
                 {
                     IsChangedTractor = false;
                 }
 
-            } catch (ArgumentOutOfRangeException ex)
+            }
+            catch (ArgumentOutOfRangeException ex) // ловим ошибку количетсва в numeric меньше 0 больше 10
             {
                 MessageBox.Show(ex.Message);
             }
         }
 
 
-        private void checkedListBoxTractors_SelectedIndexChanged(object sender, EventArgs e)
+        private void checkedListBoxTractors_SelectedIndexChanged(object sender, EventArgs e) //обработчик события чека чекбоксов тракторов
         {
-            for (int i = 0; i < checkedListBoxTractors.Items.Count; i++)
+            for (int i = 0; i < checkedListBoxTractors.Items.Count; i++) // проходимся по чекбоксам тракторов
             {
-                bool isCurrentChecked = checkedListBoxTractors.GetItemChecked(i);
-                if (isCurrentChecked)
+                bool isCurrentChecked = checkedListBoxTractors.GetItemChecked(i); // кладем в переменуюю состояние итеррируемого чекбокса
+                if (isCurrentChecked) // если чекбокс выбран 
+
                 {
-                    container.ActivateTractor(i);
+                    container.ActivateTractor(i);  //активируем фигуру
                 }
                 else
                 {
-                    container.DeactivateTractor(i);
+                    container.DeactivateTractor(i); // иначе деактивируем
                 }
             }
-            panel1.Refresh();
+            panel1.Refresh(); // перерисовываем панель
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -244,7 +245,7 @@ namespace AdvancedPaint
 
             foreach (Figure figure in container)
             {
-               figure.Draw(gr);
+                figure.Draw(gr);
             }
         }
 
@@ -261,28 +262,29 @@ namespace AdvancedPaint
                 int countRectangleInContainer = container.getCountRectange();
 
                 Figure myRectangle;
-            
-                    int red = randomColor.Next(256);
-                    int green = randomColor.Next(256);
-                    int blue = randomColor.Next(256);
 
-                    Color color = Color.FromArgb(red, green, blue);
+                int red = randomColor.Next(256);
+                int green = randomColor.Next(256);
+                int blue = randomColor.Next(256);
 
-                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width) - 200);
-                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height) - 200);
-                    int width = randomWidth.Next(50, 200);
-                    int height = randomHeight.Next(50, 200);
+                Color color = Color.FromArgb(red, green, blue);
 
-                    myRectangle = new MyRectangle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
-                    myRectangle.color = color;
+                PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width) - 200);
+                PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height) - 200);
+                int width = randomWidth.Next(50, 200);
+                int height = randomHeight.Next(50, 200);
 
-                    container.AddItem(myRectangle);
+                myRectangle = new MyRectangle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
+                myRectangle.color = color;
+
+                container.AddItem(myRectangle);
                 panel1.Refresh();
             }
-            catch (IndexOutOfRangeException ex) {
+            catch (IndexOutOfRangeException ex)
+            {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void CircleDraw()
@@ -296,24 +298,25 @@ namespace AdvancedPaint
                 Random randomNumber = new Random();
 
                 Figure myCircle;
-               
-                    int red = randomColor.Next(256);
-                    int green = randomColor.Next(256);
-                    int blue = randomColor.Next(256);
 
-                    Color color = Color.FromArgb(red, green, blue);
+                int red = randomColor.Next(256);
+                int green = randomColor.Next(256);
+                int blue = randomColor.Next(256);
 
-                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
-                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
-                    int width = (randomWidth.Next(50, 200));
-                    int height = (randomHeight.Next(50, 200));
+                Color color = Color.FromArgb(red, green, blue);
 
-                    myCircle = new MyCircle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
-                    myCircle.color = color;
-                    
-                    container.AddItem(myCircle);
+                PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
+                PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
+                int width = (randomWidth.Next(50, 200));
+                int height = (randomHeight.Next(50, 200));
+
+                myCircle = new MyCircle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
+                myCircle.color = color;
+
+                container.AddItem(myCircle);
                 panel1.Refresh();
-            } catch (IndexOutOfRangeException ex)
+            }
+            catch (IndexOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -332,54 +335,55 @@ namespace AdvancedPaint
                 Random randomNumber = new Random();
 
                 Figure myTractor;
-                
-                    int red = randomColor.Next(256);
-                    int green = randomColor.Next(256);
-                    int blue = randomColor.Next(256);
 
-                    Color color = Color.FromArgb(red, green, blue);
-                    Brush brush = new SolidBrush(color);
+                int red = randomColor.Next(256);
+                int green = randomColor.Next(256);
+                int blue = randomColor.Next(256);
 
-                    PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
-                    PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
-                    int width = randomWidth.Next(25, 200);
-                    int height = randomHeight.Next(width / 2, width * 2);
+                Color color = Color.FromArgb(red, green, blue);
+                Brush brush = new SolidBrush(color);
 
-                    myTractor = new MyTractor(PointStart.X, PointStart.Y, height, width, brush);
-                    myTractor.color = color;
+                PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
+                PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
+                int width = randomWidth.Next(25, 200);
+                int height = randomHeight.Next(width / 2, width * 2);
 
-                    MyRectangle myRectangle1 = new MyRectangle(PointStart.X, PointStart.Y - height, height, width / 6, brush);
-                    if (myRectangle1.isActive)
-                    {
+                myTractor = new MyTractor(PointStart.X, PointStart.Y, height, width, brush);
+                myTractor.color = color;
+
+                MyRectangle myRectangle1 = new MyRectangle(PointStart.X, PointStart.Y - height, height, width / 6, brush);
+                if (myRectangle1.isActive)
+                {
                     myRectangle1.brush = brush;
-                    }
-                    else
-                    {
+                }
+                else
+                {
                     myRectangle1.brush = new SolidBrush(Color.FromArgb(128, Color.Gray));
-                    }
-                    myRectangle1.color = color;
+                }
+                myRectangle1.color = color;
 
-                    MyRectangle myRectangle2 = new MyRectangle(PointStart.X, PointStart.Y, height, width, brush);
-                    myRectangle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
-                    myRectangle2.color = color;
+                MyRectangle myRectangle2 = new MyRectangle(PointStart.X, PointStart.Y, height, width, brush);
+                myRectangle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                myRectangle2.color = color;
 
-                    MyCircle myCircle1 = new MyCircle(PointStart.X, PointStart.Y + height, height / 2, width / 2, brush);
-                    myCircle1.brush = myCircle1.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
-                    myCircle1.color = color;
+                MyCircle myCircle1 = new MyCircle(PointStart.X, PointStart.Y + height, height / 2, width / 2, brush);
+                myCircle1.brush = myCircle1.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                myCircle1.color = color;
 
-                    MyCircle myCircle2 = new MyCircle(PointStart.X + width / 2, PointStart.Y + height, height / 2, width / 2, brush);
-                    myCircle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
-                    myCircle2.color = color;
+                MyCircle myCircle2 = new MyCircle(PointStart.X + width / 2, PointStart.Y + height, height / 2, width / 2, brush);
+                myCircle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                myCircle2.color = color;
 
-                    myTractor.container.AddItem(myRectangle1);
-                    myTractor.container.AddItem(myRectangle2);
-                    myTractor.container.AddItem(myCircle1);
-                    myTractor.container.AddItem(myCircle2);
+                myTractor.container.AddItem(myRectangle1);
+                myTractor.container.AddItem(myRectangle2);
+                myTractor.container.AddItem(myCircle1);
+                myTractor.container.AddItem(myCircle2);
 
 
-                    container.AddItem(myTractor);
-                    panel1.Refresh();
-            } catch (IndexOutOfRangeException ex)
+                container.AddItem(myTractor);
+                panel1.Refresh();
+            }
+            catch (IndexOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -407,7 +411,7 @@ namespace AdvancedPaint
             {
                 if (f.IsPointInside(e.X, e.Y) && f.isActive)
                 {
-                    if(f is MyRectangle || f is MyCircle)
+                    if (f is MyRectangle || f is MyCircle)
                     {
                         EditorRectangleOrCirlce editorRectangleOrCirlce = new EditorRectangleOrCirlce(f, panel1);
                         editorRectangleOrCirlce.Show();
@@ -527,7 +531,7 @@ namespace AdvancedPaint
                         type = "MyTractor";
                     }
 
-                    sw.WriteLine($"type:{type},{String.Join(",",subTypes)}");
+                    sw.WriteLine($"type:{type},{String.Join(",", subTypes)}");
                     sw.WriteLine($"x:{f.x},{String.Join(",", subX)}");
                     sw.WriteLine($"y:{f.y},{String.Join(",", subY)}");
                     sw.WriteLine($"height:{f.height},{String.Join(",", subHeights)}");
@@ -544,7 +548,7 @@ namespace AdvancedPaint
         {
             string filePath = GetFilePathFromDialog();
 
-            if(filePath == string.Empty)
+            if (filePath == string.Empty)
             {
                 return;
             }
@@ -554,7 +558,7 @@ namespace AdvancedPaint
             {
                 while (!file.EndOfStream)
                 {
-                  strFroFile.Add(file.ReadLine());
+                    strFroFile.Add(file.ReadLine());
                 }
 
                 string type = "";
@@ -569,17 +573,20 @@ namespace AdvancedPaint
                 {
                     Regex reg = new Regex(str);
 
-                    if (Regex.IsMatch(str,"type"))
+                    if (Regex.IsMatch(str, "type"))
                     {
                         type = str.Split(':')[1];
-                        
-                    } else if (Regex.IsMatch(str, "x"))
+
+                    }
+                    else if (Regex.IsMatch(str, "x"))
                     {
                         x = str.Split(':')[1];
-                    } else if (Regex.IsMatch(str, "y"))
+                    }
+                    else if (Regex.IsMatch(str, "y"))
                     {
                         y = str.Split(':')[1];
-                    } else if (Regex.IsMatch(str, "height"))
+                    }
+                    else if (Regex.IsMatch(str, "height"))
                     {
                         height = str.Split(':')[1];
                     }
@@ -592,7 +599,7 @@ namespace AdvancedPaint
                         color = str.Split(':')[1];
                     }
 
-                    if(color != "")
+                    if (color != "")
                     {
                         switch (type.Split(',')[0])
                         {
@@ -683,12 +690,13 @@ namespace AdvancedPaint
 
                         container.AddItem(f);
 
-                        if(f is MyRectangle)
+                        if (f is MyRectangle)
                         {
                             checkedListBoxRectangles.Items.Add("Прямоугольник");
-                            checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1,true);
-                            numericUpDownRectangle.Value += 1; 
-                        } else if(f is MyCircle)
+                            checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1, true);
+                            numericUpDownRectangle.Value += 1;
+                        }
+                        else if (f is MyCircle)
                         {
                             checkedListBoxCircles.Items.Add("Круг");
                             checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true);
@@ -707,18 +715,19 @@ namespace AdvancedPaint
 
 
                 }
-                
+
             }
         }
 
-        private Color GetColorFromStrARGB(string str) {
+        private Color GetColorFromStrARGB(string str)
+        {
             MatchCollection matchCollection = Regex.Matches(str, @"\d+");
             int a = int.Parse(matchCollection[0].Value);
             int r = int.Parse(matchCollection[1].Value);
             int g = int.Parse(matchCollection[2].Value);
             int b = int.Parse(matchCollection[3].Value);
 
-            return Color.FromArgb(a,r,g,b);
+            return Color.FromArgb(a, r, g, b);
         }
 
         private string GetFilePathFromDialog()
@@ -740,7 +749,7 @@ namespace AdvancedPaint
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(IsChangedRectangle || IsChangedCircle || IsChangedTractor)
+            if (IsChangedRectangle || IsChangedCircle || IsChangedTractor)
             {
                 string message = "Уходите? У Вас есть не сохранненые изменения. Желаете сохранить состояние?";
                 DialogResult result = MessageBox.Show(message, "Предупреждение", MessageBoxButtons.YesNoCancel);
