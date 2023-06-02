@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
 namespace AdvancedPaint
 {
 
     public class MyTractor:Figure
     {
+        int start_x, start_y;
+
 
         public MyTractor(int PointStartX, int PointStartY, int height, int width, Brush brush)
         {
-
             x = PointStartX;
             y = PointStartY;
+            start_x = x;
+            start_y = y;
             this.height = height;
             this.width = width;
             this.brush = brush;
@@ -64,6 +60,29 @@ namespace AdvancedPaint
                 count++;
             }
 
+        }
+
+        public override void Go(int X, int Y, int speed)
+        {
+            foreach (Figure f in container)
+            {
+                if (f.x < X + start_x && f.y == start_y)
+                {
+                    f.x += speed;
+                }
+                else if (f.x >= X + start_x && f.y >= start_y && f.y < Y + start_y)
+                {
+                    f.y += speed;
+                }
+                else if (y >= Y + start_y && f.x > start_x)
+                {
+                    f.x -= speed;
+                }
+                else if (x <= start_x)
+                {
+                    f.y -= speed;
+                }
+            }
         }
 
         public override bool IsPointInside(int pointX, int pointY)

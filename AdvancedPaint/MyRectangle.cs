@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AdvancedPaint
 {
 
-    [DataContract]
-    [KnownType(typeof(MyRectangle))]
+
     public class MyRectangle:Figure
     {
+        int start_x, start_y;
         public MyRectangle(int PointStartX, int PointStartY, int height, int width, Brush brush)
         {
 
             x = PointStartX;
             y = PointStartY;
+            start_x = x;
+            start_y = y;
             this.height = height;
             this.width = width;
             this.brush = brush;
@@ -38,6 +39,26 @@ namespace AdvancedPaint
             x = pointX;
             y = pointY;
 
+        }
+
+        public override void Go(int X, int Y, int speed)
+        {
+            if (x < X + start_x && y == start_y)
+            {
+                x += speed;
+            }
+            else if (x >= X + start_x && y >= start_y && y < Y + start_y)
+            {
+                y += speed;
+            }
+            else if (y >= Y + start_y && x > start_x)
+            {
+                x -= speed;
+            }
+            else if (x <= start_x)
+            {
+                y -= speed;
+            }
         }
 
         public override bool IsPointInside(int pointX, int pointY)

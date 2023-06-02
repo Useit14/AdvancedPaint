@@ -28,13 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonGo = new System.Windows.Forms.Button();
             this.buttonColor = new System.Windows.Forms.Button();
             this.labelWidth = new System.Windows.Forms.Label();
             this.numericUpDownHeight = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownWidth = new System.Windows.Forms.NumericUpDown();
             this.labelHeight = new System.Windows.Forms.Label();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWidth)).BeginInit();
@@ -42,6 +45,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonGo);
             this.panel1.Controls.Add(this.buttonColor);
             this.panel1.Controls.Add(this.labelWidth);
             this.panel1.Controls.Add(this.numericUpDownHeight);
@@ -54,6 +58,17 @@
             this.panel1.TabIndex = 1;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.panel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseClick);
+            // 
+            // buttonGo
+            // 
+            this.buttonGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonGo.Location = new System.Drawing.Point(433, 106);
+            this.buttonGo.Name = "buttonGo";
+            this.buttonGo.Size = new System.Drawing.Size(81, 32);
+            this.buttonGo.TabIndex = 6;
+            this.buttonGo.Text = "Поехали";
+            this.buttonGo.UseVisualStyleBackColor = true;
+            this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
             // 
             // buttonColor
             // 
@@ -82,7 +97,7 @@
             this.numericUpDownHeight.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numericUpDownHeight.Location = new System.Drawing.Point(403, 40);
             this.numericUpDownHeight.Maximum = new decimal(new int[] {
-            200,
+            400,
             0,
             0,
             0});
@@ -96,7 +111,7 @@
             this.numericUpDownWidth.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numericUpDownWidth.Location = new System.Drawing.Point(403, 9);
             this.numericUpDownWidth.Maximum = new decimal(new int[] {
-            200,
+            400,
             0,
             0,
             0});
@@ -115,6 +130,10 @@
             this.labelHeight.Size = new System.Drawing.Size(72, 20);
             this.labelHeight.TabIndex = 3;
             this.labelHeight.Text = "Высота";
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // EditTractor
             // 
@@ -147,5 +166,7 @@
         private System.Windows.Forms.NumericUpDown numericUpDownWidth;
         private System.Windows.Forms.Label labelHeight;
         private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.Button buttonGo;
+        private System.Windows.Forms.Timer timer1;
     }
 }

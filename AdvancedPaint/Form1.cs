@@ -6,6 +6,8 @@ using CheckBox = System.Windows.Forms.CheckBox;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace AdvancedPaint
 {
@@ -16,24 +18,26 @@ namespace AdvancedPaint
             InitializeComponent();
         }
 
-         int countRectangle;
+         int countRectangle; 
          int countCircle;
          int countTractor;
-        int maxWidthFigure = 200;
-        int maxHeightFigure = 200;
          Point PointStart;
          Point PointEnd;
          Container container = new Container();
          Figure figureMove;
          bool IsMouseDown = false;
-         bool IsBelong = false;
-        DataContractJsonSerializer json;
+         bool IsChangedRectangle = false;
+        bool IsChangedCircle = false;
+        bool IsChangedTractor = false;
+
 
 
         private void numericUpDownRectangle_ValueChanged(object sender, EventArgs e)
         {
             try
             {
+                IsChangedRectangle = true;
+
                 int countRectanglesInContainer = container.getCountRectange();
                 countRectangle = int.Parse(numericUpDownRectangle.Value.ToString());
 
@@ -63,10 +67,15 @@ namespace AdvancedPaint
                 {
                     RectangleDraw();
                     CheckBox checkBoxRectangle = new CheckBox();
-                    checkedListBoxRectangles.Items.Add("Прямоугольник" + (checkedListBoxRectangles.Items.Count + i + 1));
+                    checkedListBoxRectangles.Items.Add("Прямоугольник");
                     checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1, true);
                     
 
+                }
+
+                if (checkedListBoxRectangles.CheckedItems.Count == 0)
+                {
+                    IsChangedRectangle = false;
                 }
 
             } catch (ArgumentOutOfRangeException ex)
@@ -98,6 +107,8 @@ namespace AdvancedPaint
         {
             try
             {
+                IsChangedCircle = true;
+                
                 int countCirclesInContainer = container.getCountCircle();
                 countCircle = int.Parse(numericUpDownCircle.Value.ToString());
 
@@ -126,9 +137,16 @@ namespace AdvancedPaint
                 for (int i = 0; i < countCircle - countCirclesInContainer; i++)
                 {
                     CircleDraw();
-                    checkedListBoxCircles.Items.Add("Круг" + (checkedListBoxCircles.Items.Count + i + 1));
+                    checkedListBoxCircles.Items.Add("Круг");
                     checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true);
+                
                 }
+
+                if (checkedListBoxCircles.CheckedItems.Count == 0)
+                {
+                    IsChangedCircle = false;
+                }
+
             } catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message);
@@ -157,6 +175,8 @@ namespace AdvancedPaint
         {
             try
             {
+                IsChangedTractor = true;
+
                 int countTractorsInContainer = container.getCountTractor();
                 countTractor = int.Parse(numericUpDownTractor.Value.ToString());
 
@@ -176,8 +196,8 @@ namespace AdvancedPaint
                         {
                             checkedListBoxTractors.Items.RemoveAt(checkedListBoxTractors.Items.Count - 1);
                         }
-
                         panel1.Refresh();
+
                     }
                     return;
                 }
@@ -185,8 +205,13 @@ namespace AdvancedPaint
                 for (int i = 0; i < countTractor - countTractorsInContainer; i++)
                 {
                     TractorDraw();
-                    checkedListBoxTractors.Items.Add("Трактор" + (checkedListBoxTractors.Items.Count + i + 1));
+                    checkedListBoxTractors.Items.Add("Трактор");
                     checkedListBoxTractors.SetItemChecked(checkedListBoxTractors.Items.Count - 1, true);
+                }
+
+                if (checkedListBoxTractors.CheckedItems.Count == 0)
+                {
+                    IsChangedTractor = false;
                 }
 
             } catch (ArgumentOutOfRangeException ex)
@@ -249,6 +274,8 @@ namespace AdvancedPaint
                     int height = randomHeight.Next(50, 200);
 
                     myRectangle = new MyRectangle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
+                    myRectangle.color = color;
+
                     container.AddItem(myRectangle);
                 panel1.Refresh();
             }
@@ -275,7 +302,6 @@ namespace AdvancedPaint
                     int blue = randomColor.Next(256);
 
                     Color color = Color.FromArgb(red, green, blue);
-                    int thickness = randomNumber.Next(1, 10);
 
                     PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
                     PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
@@ -283,6 +309,8 @@ namespace AdvancedPaint
                     int height = (randomHeight.Next(50, 200));
 
                     myCircle = new MyCircle(PointStart.X, PointStart.Y, height, width, new SolidBrush(color));
+                    myCircle.color = color;
+                    
                     container.AddItem(myCircle);
                 panel1.Refresh();
             } catch (IndexOutOfRangeException ex)
@@ -296,6 +324,7 @@ namespace AdvancedPaint
 
             try
             {
+
                 Random randomCoordinats = new Random();
                 Random randomWidth = new Random();
                 Random randomHeight = new Random();
@@ -313,22 +342,34 @@ namespace AdvancedPaint
 
                     PointStart.X = Math.Abs(randomCoordinats.Next(panel1.Location.X, panel1.Width - 200));
                     PointStart.Y = Math.Abs(randomCoordinats.Next(panel1.Location.Y, panel1.Height - 200));
-                    int width = randomWidth.Next(50, 200);
-                    int height = randomHeight.Next(50, 200);
+                    int width = randomWidth.Next(25, 200);
+                    int height = randomHeight.Next(width / 2, width * 2);
 
                     myTractor = new MyTractor(PointStart.X, PointStart.Y, height, width, brush);
+                    myTractor.color = color;
 
                     MyRectangle myRectangle1 = new MyRectangle(PointStart.X, PointStart.Y - height, height, width / 6, brush);
-                    myRectangle1.brush = myRectangle1.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                    if (myRectangle1.isActive)
+                    {
+                    myRectangle1.brush = brush;
+                    }
+                    else
+                    {
+                    myRectangle1.brush = new SolidBrush(Color.FromArgb(128, Color.Gray));
+                    }
+                    myRectangle1.color = color;
 
                     MyRectangle myRectangle2 = new MyRectangle(PointStart.X, PointStart.Y, height, width, brush);
                     myRectangle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                    myRectangle2.color = color;
 
                     MyCircle myCircle1 = new MyCircle(PointStart.X, PointStart.Y + height, height / 2, width / 2, brush);
                     myCircle1.brush = myCircle1.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                    myCircle1.color = color;
 
                     MyCircle myCircle2 = new MyCircle(PointStart.X + width / 2, PointStart.Y + height, height / 2, width / 2, brush);
                     myCircle2.brush = myRectangle2.isActive ? brush : new SolidBrush(Color.FromArgb(128, Color.Gray));
+                    myCircle2.color = color;
 
                     myTractor.container.AddItem(myRectangle1);
                     myTractor.container.AddItem(myRectangle2);
@@ -347,9 +388,16 @@ namespace AdvancedPaint
         private void buttonClear_Click(object sender, EventArgs e)
         {
             container.Reset();
+
+            checkedListBoxRectangles.Items.Clear();
+            checkedListBoxCircles.Items.Clear();
+            checkedListBoxTractors.Items.Clear();
+
+
             numericUpDownRectangle.Value = 0;
             numericUpDownCircle.Value = 0;
             numericUpDownTractor.Value = 0;
+
             panel1.Refresh();
         }
 
@@ -361,12 +409,12 @@ namespace AdvancedPaint
                 {
                     if(f is MyRectangle || f is MyCircle)
                     {
-                        EditorRectangleOrCirlce editorRectangleOrCirlce = new EditorRectangleOrCirlce(f, container, panel1);
+                        EditorRectangleOrCirlce editorRectangleOrCirlce = new EditorRectangleOrCirlce(f, panel1);
                         editorRectangleOrCirlce.Show();
                     }
                     else
                     {
-                        EditTractor editTractor = new EditTractor(f, container, panel1);
+                        EditTractor editTractor = new EditTractor(f, panel1);
                         editTractor.Show();
                     }
                     panel1.Refresh();
@@ -386,7 +434,6 @@ namespace AdvancedPaint
             {
                 if (figure.IsPointInside(e.X, e.Y) == true && figure.isActive)
                 {
-                    IsBelong = true;
                     figureMove = figure;
                     break;
                 }
@@ -406,7 +453,6 @@ namespace AdvancedPaint
                 IsMouseDown = false;
 
                 figureMove.Move(PointEnd.X, PointEnd.Y);
-
                 panel1.Refresh();
             }
         }
@@ -415,10 +461,81 @@ namespace AdvancedPaint
         private void ToolStripMenuItemSave_Click(object sender, EventArgs e)
         {
             string filePath = GetFilePathFromDialog();
-            json = new DataContractJsonSerializer(typeof(List<Figure>));
-            using (var file = new FileStream(filePath, FileMode.OpenOrCreate))
+
+            if (filePath == string.Empty)
             {
-                json.WriteObject(file, container);
+                return;
+            }
+
+            using (StreamWriter sw = new StreamWriter(filePath))
+            {
+                int count = container.GetList().Count;
+                foreach (Figure f in container)
+                {
+                    string type = "";
+
+                    List<string> subTypes = new List<string>();
+                    List<int> subX = new List<int>();
+                    List<int> subY = new List<int>();
+                    List<int> subHeights = new List<int>();
+                    List<int> subWidths = new List<int>();
+                    List<Color> subColors = new List<Color>();
+
+
+                    List<Figure> subFigures = f.container != null && f.container.GetList().Count > 0 ? f.container.GetList() : null;
+                    if (subFigures != null)
+                    {
+                        subTypes = new List<string>();
+                        subX = new List<int>();
+                        subY = new List<int>();
+                        subHeights = new List<int>();
+                        subWidths = new List<int>();
+                        subColors = new List<Color>();
+
+                        int subCount = subFigures.Count;
+                        foreach (Figure subF in subFigures)
+                        {
+
+                            if (subF is MyRectangle)
+                            {
+                                subTypes.Add("MyRectangle");
+                            }
+                            else if (subF is MyCircle)
+                            {
+                                subTypes.Add("MyCircle");
+                            }
+
+                            subX.Add(subF.x);
+                            subY.Add(subF.y);
+                            subHeights.Add(subF.height);
+                            subWidths.Add(subF.width);
+                            subColors.Add(subF.color);
+                        }
+                    }
+
+
+                    if (f is MyRectangle)
+                    {
+                        type = "MyRectangle";
+                    }
+                    else if (f is MyCircle)
+                    {
+                        type = "MyCircle";
+                    }
+                    else
+                    {
+                        type = "MyTractor";
+                    }
+
+                    sw.WriteLine($"type:{type},{String.Join(",",subTypes)}");
+                    sw.WriteLine($"x:{f.x},{String.Join(",", subX)}");
+                    sw.WriteLine($"y:{f.y},{String.Join(",", subY)}");
+                    sw.WriteLine($"height:{f.height},{String.Join(",", subHeights)}");
+                    sw.WriteLine($"width:{f.width},{String.Join(",", subWidths)}");
+                    sw.WriteLine($"color:{f.color},{String.Join(",", subColors)}");
+                    sw.WriteLine("------");
+                }
+
             }
 
         }
@@ -426,12 +543,182 @@ namespace AdvancedPaint
         private void ToolStripMenuItemLoad_Click(object sender, EventArgs e)
         {
             string filePath = GetFilePathFromDialog();
-            json = new DataContractJsonSerializer(typeof(List<Figure>));
 
-            using (var file = new FileStream(filePath, FileMode.OpenOrCreate))
+            if(filePath == string.Empty)
             {
-                container.SetList((List<Figure>)json.ReadObject(file)); 
+                return;
             }
+
+            List<string> strFroFile = new List<string>();
+            using (var file = new StreamReader(filePath))
+            {
+                while (!file.EndOfStream)
+                {
+                  strFroFile.Add(file.ReadLine());
+                }
+
+                string type = "";
+                string x = "";
+                string y = "";
+                string height = "";
+                string width = "";
+                string color = "";
+
+                Figure f = new MyCircle(0, 0, 0, 0, new SolidBrush(Color.Red));
+                foreach (var str in strFroFile)
+                {
+                    Regex reg = new Regex(str);
+
+                    if (Regex.IsMatch(str,"type"))
+                    {
+                        type = str.Split(':')[1];
+                        
+                    } else if (Regex.IsMatch(str, "x"))
+                    {
+                        x = str.Split(':')[1];
+                    } else if (Regex.IsMatch(str, "y"))
+                    {
+                        y = str.Split(':')[1];
+                    } else if (Regex.IsMatch(str, "height"))
+                    {
+                        height = str.Split(':')[1];
+                    }
+                    else if (Regex.IsMatch(str, "width"))
+                    {
+                        width = str.Split(':')[1];
+                    }
+                    else if (Regex.IsMatch(str, "color"))
+                    {
+                        color = str.Split(':')[1];
+                    }
+
+                    if(color != "")
+                    {
+                        switch (type.Split(',')[0])
+                        {
+                            case "MyRectangle":
+                                int intX = int.Parse(x.Split(',')[0]);
+                                int intY = int.Parse(y.Split(',')[0]);
+                                int intHeight = int.Parse(height.Split(',')[0]);
+                                int intWidth = int.Parse(width.Split(',')[0]);
+                                int a = int.Parse(Regex.Matches(color, @"\d+")[0].Value);
+                                int r = int.Parse(Regex.Matches(color, @"\d+")[1].Value);
+                                int g = int.Parse(Regex.Matches(color, @"\d+")[2].Value);
+                                int b = int.Parse(Regex.Matches(color, @"\d+")[3].Value);
+                                f = new MyRectangle(intX, intY, intHeight, intWidth, new SolidBrush(Color.FromArgb(a, r, g, b)));
+                                f.color = Color.FromArgb(a, r, g, b);
+                                break;
+                            case "MyCircle":
+                                intX = int.Parse(x.Split(',')[0]);
+                                intY = int.Parse(y.Split(',')[0]);
+                                intHeight = int.Parse(height.Split(',')[0]);
+                                intWidth = int.Parse(width.Split(',')[0]);
+                                a = int.Parse(Regex.Matches(color, @"\d+")[0].Value);
+                                r = int.Parse(Regex.Matches(color, @"\d+")[1].Value);
+                                g = int.Parse(Regex.Matches(color, @"\d+")[2].Value);
+                                b = int.Parse(Regex.Matches(color, @"\d+")[3].Value);
+                                f = new MyCircle(intX, intY, intHeight, intWidth, new SolidBrush(Color.FromArgb(a, r, g, b)));
+                                f.color = Color.FromArgb(a, r, g, b);
+                                break;
+                            case "MyTractor":
+                                intX = int.Parse(x.Split(',')[0]);
+                                intY = int.Parse(y.Split(',')[0]);
+                                intHeight = int.Parse(height.Split(',')[0]);
+                                intWidth = int.Parse(width.Split(',')[0]);
+                                Color c = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[0].Value);
+                                List<Figure> subFigures = new List<Figure>()
+                            {
+
+                                    new MyRectangle(
+                                    int.Parse(x.Split(',')[1]),
+                                    int.Parse(y.Split(',')[1]),
+                                    int.Parse(height.Split(',')[1]),
+                                    int.Parse(width.Split(',')[1]),
+                                    new SolidBrush(GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[1].Value))
+                                    ),
+
+                                    new MyRectangle(
+                                    int.Parse(x.Split(',')[2]),
+                                    int.Parse(y.Split(',')[2]),
+                                    int.Parse(height.Split(',')[2]),
+                                    int.Parse(width.Split(',')[2]),
+                                    new SolidBrush(GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[2].Value))
+                                    ),
+
+                                    new MyCircle(
+                                    int.Parse(x.Split(',')[3]),
+                                    int.Parse(y.Split(',')[3]),
+                                    int.Parse(height.Split(',')[3]),
+                                    int.Parse(width.Split(',')[3]),
+                                    new SolidBrush(GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[3].Value))
+                                    ),
+
+                                    new MyCircle(
+                                    int.Parse(x.Split(',')[4]),
+                                    int.Parse(y.Split(',')[4]),
+                                    int.Parse(height.Split(',')[4]),
+                                    int.Parse(width.Split(',')[4]),
+                                    new SolidBrush(GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[4].Value))
+                                    )
+                            };
+
+                                f = new MyTractor(
+                                    int.Parse(x.Split(',')[0]),
+                                    int.Parse(y.Split(',')[0]),
+                                    int.Parse(height.Split(',')[0]),
+                                    int.Parse(width.Split(',')[0]),
+                                    new SolidBrush(GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[0].Value))
+                                );
+
+                                f.color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[0].Value);
+                                subFigures.ElementAt(0).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[1].Value);
+                                subFigures.ElementAt(1).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[2].Value);
+                                subFigures.ElementAt(2).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[3].Value);
+                                subFigures.ElementAt(3).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[4].Value);
+
+
+                                f.container.SetList(subFigures);
+                                break;
+                        }
+
+                        container.AddItem(f);
+
+                        if(f is MyRectangle)
+                        {
+                            checkedListBoxRectangles.Items.Add("Прямоугольник");
+                            checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1,true);
+                            numericUpDownRectangle.Value += 1; 
+                        } else if(f is MyCircle)
+                        {
+                            checkedListBoxCircles.Items.Add("Круг");
+                            checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true);
+                            numericUpDownCircle.Value += 1;
+                        }
+                        else
+                        {
+                            checkedListBoxTractors.Items.Add("Трактор");
+                            checkedListBoxTractors.SetItemChecked(checkedListBoxTractors.Items.Count - 1, true);
+                            numericUpDownTractor.Value += 1;
+
+                        }
+
+                        color = "";
+                    }
+
+
+                }
+                
+            }
+        }
+
+        private Color GetColorFromStrARGB(string str) {
+            MatchCollection matchCollection = Regex.Matches(str, @"\d+");
+            int a = int.Parse(matchCollection[0].Value);
+            int r = int.Parse(matchCollection[1].Value);
+            int g = int.Parse(matchCollection[2].Value);
+            int b = int.Parse(matchCollection[3].Value);
+
+            return Color.FromArgb(a,r,g,b);
         }
 
         private string GetFilePathFromDialog()
@@ -451,5 +738,28 @@ namespace AdvancedPaint
             return string.Empty;
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(IsChangedRectangle || IsChangedCircle || IsChangedTractor)
+            {
+                string message = "Уходите? У Вас есть не сохранненые изменения. Желаете сохранить состояние?";
+                DialogResult result = MessageBox.Show(message, "Предупреждение", MessageBoxButtons.YesNoCancel);
+
+                if (result == DialogResult.Yes)
+                {
+                    ToolStripMenuItemSave.PerformClick();
+                }
+                else if (result == DialogResult.No)
+                {
+                    return;
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+
+            }
+
+        }
     }
 }

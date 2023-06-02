@@ -1,14 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace AdvancedPaint
 {
-    [DataContract]
-    [KnownType(typeof(Container))]
     public class Container: IEnumerable
     {
-        [DataMember]
         public List<Figure> figures = new List<Figure>();
 
         public Container()

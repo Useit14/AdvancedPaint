@@ -9,16 +9,13 @@ namespace AdvancedPaint
         public Figure f;
         public Panel basePanel;
 
-        public EditorRectangleOrCirlce(Figure f,Container container, Panel basePanel, int maxWidth = 200, int maxHeight = 200)
+        public EditorRectangleOrCirlce(Figure f, Panel basePanel)
         {
             InitializeComponent();
             this.f = f;
             this.basePanel = basePanel;
             numericUpDownWidth.Value = f.width;
-            //numericUpDownWidth.Maximum = maxWidth;
-
             numericUpDownHeight.Value = f.height;
-            //numericUpDownHeight.Maximum = maxHeight;
         }
 
         
