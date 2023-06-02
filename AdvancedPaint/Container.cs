@@ -5,14 +5,14 @@ namespace AdvancedPaint
 {
     public class Container: IEnumerable
     {
-        public List<Figure> figures = new List<Figure>();
+        public List<Figure> figures = new List<Figure>(); //список с фигурами
 
         public Container()
         {
 
         }
 
-        public IEnumerator GetEnumerator()
+        public IEnumerator GetEnumerator() //позволяет перебирать класс контейнер
         {
 
             return figures.GetEnumerator();
@@ -20,29 +20,29 @@ namespace AdvancedPaint
         
         }
 
-        public List<Figure> GetList()
+        public List<Figure> GetList() //возвращает список
         {
             return figures;
         }
 
-        public void SetList(List<Figure> _figures)
+        public void SetList(List<Figure> _figures) //изменяет список
         {
             figures = _figures;
         }
 
-        public void AddItem(Figure figure)
+        public void AddItem(Figure figure) //добавляет фигуру в контейнер
         {
             figures.Add(figure);
 
         }
 
 
-        public void Reset()
+        public void Reset() //очищает контейнер
         {
             figures.Clear();
         }
 
-        public int getCountRectange()
+        public int getCountRectange() //ищем количество прямоугольников в контейнера
         {
             int countRectangle = 0;
             foreach (Figure f in figures)
@@ -55,7 +55,7 @@ namespace AdvancedPaint
             return countRectangle;
         }
 
-        public int getCountCircle()
+        public int getCountCircle() //ищем количество кругов в контейнера
         {
             int countCircle = 0;
             foreach (Figure f in figures)
@@ -68,7 +68,7 @@ namespace AdvancedPaint
             return countCircle;
         }
 
-        public int getCountTractor()
+        public int getCountTractor() //ищем количество тракторов в контейнера
         {
             int countTractor = 0;
             foreach (Figure f in figures)
@@ -81,7 +81,7 @@ namespace AdvancedPaint
             return countTractor;
         }
 
-        public void removeRectangle()
+        public void removeRectangle() // удаляем послелний прямоугольник
         {
             for (int i = figures.Count-1; i > -1; i++)
             {
@@ -95,7 +95,7 @@ namespace AdvancedPaint
 
         }
 
-        public void removeCircle()
+        public void removeCircle() // удаляем послелний круг из контейнера
         {
             for (int i = figures.Count - 1; i > -1; i++)
             {
@@ -107,7 +107,7 @@ namespace AdvancedPaint
             }
         }
 
-        public void removeTractor()
+        public void removeTractor()  // удаляем послелний трактор из контейнера
         {
             for (int i = figures.Count - 1; i > -1; i++)
             {
@@ -119,7 +119,7 @@ namespace AdvancedPaint
             }
         }
 
-        public void remove(Figure figure)
+        public void remove(Figure figure)  // удаляем последнюю фигуру из контейнера
         {
             foreach (Figure f in figures)
             {
@@ -131,7 +131,7 @@ namespace AdvancedPaint
             }
         }
 
-        public void ActivateRectangle(int index)
+        public void ActivateRectangle(int index) //активируем фигуру, меняем свойство isActivite
         {
             int count = 0;
             List<Figure> rectangles = figures.FindAll(x => x is MyRectangle);
@@ -145,9 +145,9 @@ namespace AdvancedPaint
             }
         }
 
-        public void DeactivateRectangle(int index) {
+        public void DeactivateRectangle(int index) { //деактивируем фигуру, меняем свойство isActivite
             int count = 0;
-            List <Figure> rectangles = figures.FindAll(x=>x is MyRectangle);
+            List <Figure> rectangles = figures.FindAll(x=>x is MyRectangle); //находим все прямоугольники из контефнера
             foreach (Figure r in rectangles)
             {
                 if (index == count)
@@ -158,10 +158,10 @@ namespace AdvancedPaint
             }
         }
 
-        public void ActivateCircle(int index)
+        public void ActivateCircle(int index) //активируем круг
         {
             int count = 0;
-            List<Figure> circles = figures.FindAll(x => x is MyCircle);
+            List<Figure> circles = figures.FindAll(x => x is MyCircle); //находим все круги из контефнера
             foreach (Figure c in circles)
             {
                 if (index == count)
@@ -172,10 +172,10 @@ namespace AdvancedPaint
             }
         }
 
-        public void DeactivateCircle(int index)
+        public void DeactivateCircle(int index) //деактивируем круг
         {
             int count = 0;
-            List<Figure> circles = figures.FindAll(x => x is MyCircle);
+            List<Figure> circles = figures.FindAll(x => x is MyCircle); //находим все круги из контефнера
             foreach (Figure c in circles)
             {
                 if (index == count)
@@ -186,10 +186,10 @@ namespace AdvancedPaint
             }
         }
 
-        public void ActivateTractor(int index)
+        public void ActivateTractor(int index) //активируем трактор
         {
             int count = 0;
-            List<Figure> tractors = figures.FindAll(x => x is MyTractor);
+            List<Figure> tractors = figures.FindAll(x => x is MyTractor);  //находим все тракторы из контефнера
             foreach (Figure t in tractors)
             {
                 if (index == count)
@@ -200,10 +200,10 @@ namespace AdvancedPaint
             }
         }
 
-        public void DeactivateTractor(int index)
+        public void DeactivateTractor(int index) //деактивируем трактор
         {
             int count = 0;
-            List<Figure> tractors = figures.FindAll(x => x is MyTractor);
+            List<Figure> tractors = figures.FindAll(x => x is MyTractor); //находим все тракторы из контефнера
             foreach (Figure t in tractors)
             {
                 if (index == count)
