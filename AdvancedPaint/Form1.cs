@@ -549,92 +549,91 @@ namespace AdvancedPaint
         {
             string filePath = GetFilePathFromDialog(); //предоставляем пользователю выбрать путь
 
-            if (filePath == string.Empty)
+            if (filePath == string.Empty) // если путь не выбран выходим из метода 
             {
                 return;
             }
 
-            List<string> strFroFile = new List<string>();
-            using (var file = new StreamReader(filePath))
+            List<string> strFroFile = new List<string>(); // создаем список для выгрузки данных из файла
+            using (var file = new StreamReader(filePath)) // создаем поток для чтения
             {
-                while (!file.EndOfStream)
+                while (!file.EndOfStream) //пока не конец файла
                 {
-                    strFroFile.Add(file.ReadLine());
+                    strFroFile.Add(file.ReadLine()); // добавляем в список строки файла
                 }
 
-                string type = "";
+                string type = ""; // подготавливаем переменные
                 string x = "";
                 string y = "";
                 string height = "";
                 string width = "";
                 string color = "";
 
-                Figure f = new MyCircle(0, 0, 0, 0, new SolidBrush(Color.Red));
-                foreach (var str in strFroFile)
+                Figure f = new MyCircle(0, 0, 0, 0, new SolidBrush(Color.Red)); // инифиализируем исходный объект класса
+                foreach (var str in strFroFile) //проходимся по списку
                 {
-                    Regex reg = new Regex(str);
 
-                    if (Regex.IsMatch(str, "type"))
+                    if (Regex.IsMatch(str, "type")) // проверяем по регулярному выражению содержится ли слово "тип" в элементе списка
                     {
-                        type = str.Split(':')[1];
+                        type = str.Split(':')[1]; // если да, вытаскиваем все что после двоеточия
 
                     }
-                    else if (Regex.IsMatch(str, "x"))
+                    else if (Regex.IsMatch(str, "x")) // проверяем по регулярному выражению содержится ли слово "x" в элементе списка
                     {
-                        x = str.Split(':')[1];
+                        x = str.Split(':')[1]; //если да, вытаскиваем все что после двоеточия
                     }
-                    else if (Regex.IsMatch(str, "y"))
+                    else if (Regex.IsMatch(str, "y")) // проверяем по регулярному выражению содержится ли слово "y" в элементе списка
                     {
-                        y = str.Split(':')[1];
+                        y = str.Split(':')[1];  //если да, вытаскиваем все что после двоеточия
                     }
-                    else if (Regex.IsMatch(str, "height"))
+                    else if (Regex.IsMatch(str, "height")) // проверяем по регулярному выражению содержится ли слово "height" в элементе списка
                     {
-                        height = str.Split(':')[1];
+                        height = str.Split(':')[1];  //если да, вытаскиваем все что после двоеточия
                     }
-                    else if (Regex.IsMatch(str, "width"))
+                    else if (Regex.IsMatch(str, "width")) // проверяем по регулярному выражению содержится ли слово "width" в элементе списка
                     {
-                        width = str.Split(':')[1];
+                        width = str.Split(':')[1]; //если да, вытаскиваем все что после двоеточия
                     }
-                    else if (Regex.IsMatch(str, "color"))
+                    else if (Regex.IsMatch(str, "color")) // проверяем по регулярному выражению содержится ли слово "color" в элементе списка
                     {
-                        color = str.Split(':')[1];
+                        color = str.Split(':')[1]; //если да, вытаскиваем все что после двоеточия
                     }
 
-                    if (color != "")
+                    if (color != "") //если переменная color не пуста это значит что мы набрали достаточно данных для изъятия одного объекта
                     {
-                        switch (type.Split(',')[0])
+                        switch (type.Split(',')[0]) //вытаскиваем название типа из переменной
                         {
-                            case "MyRectangle":
-                                int intX = int.Parse(x.Split(',')[0]);
-                                int intY = int.Parse(y.Split(',')[0]);
-                                int intHeight = int.Parse(height.Split(',')[0]);
-                                int intWidth = int.Parse(width.Split(',')[0]);
-                                int a = int.Parse(Regex.Matches(color, @"\d+")[0].Value);
-                                int r = int.Parse(Regex.Matches(color, @"\d+")[1].Value);
-                                int g = int.Parse(Regex.Matches(color, @"\d+")[2].Value);
-                                int b = int.Parse(Regex.Matches(color, @"\d+")[3].Value);
-                                f = new MyRectangle(intX, intY, intHeight, intWidth, new SolidBrush(Color.FromArgb(a, r, g, b)));
-                                f.color = Color.FromArgb(a, r, g, b);
+                            case "MyRectangle": //если прямоугольник
+                                int intX = int.Parse(x.Split(',')[0]); //вытаскиваем координату x
+                                int intY = int.Parse(y.Split(',')[0]); //вытаскием координату y
+                                int intHeight = int.Parse(height.Split(',')[0]); //вытаскиваем  высоту
+                                int intWidth = int.Parse(width.Split(',')[0]); //вытаскиваем  ширину
+                                int a = int.Parse(Regex.Matches(color, @"\d+")[0].Value); //вытаскиваем альфа канал
+                                int r = int.Parse(Regex.Matches(color, @"\d+")[1].Value); // вытаскиваем красный цвет
+                                int g = int.Parse(Regex.Matches(color, @"\d+")[2].Value); // вытаскиваем зеленый цвет
+                                int b = int.Parse(Regex.Matches(color, @"\d+")[3].Value); // вытаскиваем синий цвет
+                                f = new MyRectangle(intX, intY, intHeight, intWidth, new SolidBrush(Color.FromArgb(a, r, g, b))); //создаем по полученным данных объект класса прямоугольника
+                                f.color = Color.FromArgb(a, r, g, b); //меняем свойства color данного объекта на полученное новое значение
                                 break;
-                            case "MyCircle":
-                                intX = int.Parse(x.Split(',')[0]);
-                                intY = int.Parse(y.Split(',')[0]);
-                                intHeight = int.Parse(height.Split(',')[0]);
-                                intWidth = int.Parse(width.Split(',')[0]);
-                                a = int.Parse(Regex.Matches(color, @"\d+")[0].Value);
-                                r = int.Parse(Regex.Matches(color, @"\d+")[1].Value);
-                                g = int.Parse(Regex.Matches(color, @"\d+")[2].Value);
-                                b = int.Parse(Regex.Matches(color, @"\d+")[3].Value);
-                                f = new MyCircle(intX, intY, intHeight, intWidth, new SolidBrush(Color.FromArgb(a, r, g, b)));
-                                f.color = Color.FromArgb(a, r, g, b);
+                            case "MyCircle": //если круг
+                                intX = int.Parse(x.Split(',')[0]); //вытаскиваем координату x
+                                intY = int.Parse(y.Split(',')[0]); //вытаскием координату y
+                                intHeight = int.Parse(height.Split(',')[0]); //вытаскиваем  высоту
+                                intWidth = int.Parse(width.Split(',')[0]); //вытаскиваем  ширину
+                                a = int.Parse(Regex.Matches(color, @"\d+")[0].Value); //вытаскиваем альфа канал
+                                r = int.Parse(Regex.Matches(color, @"\d+")[1].Value);  // вытаскиваем красный цвет
+                                g = int.Parse(Regex.Matches(color, @"\d+")[2].Value); // вытаскиваем зеленый цвет
+                                b = int.Parse(Regex.Matches(color, @"\d+")[3].Value); // вытаскиваем синий цвет
+                                f = new MyCircle(intX, intY, intHeight, intWidth, new SolidBrush(Color.FromArgb(a, r, g, b))); //создаем по полученным данных объект класса круга
+                                f.color = Color.FromArgb(a, r, g, b); //меняем свойства color данного объекта на полученное новое значение
                                 break;
-                            case "MyTractor":
-                                intX = int.Parse(x.Split(',')[0]);
-                                intY = int.Parse(y.Split(',')[0]);
-                                intHeight = int.Parse(height.Split(',')[0]);
-                                intWidth = int.Parse(width.Split(',')[0]);
-                                Color c = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[0].Value);
-                                List<Figure> subFigures = new List<Figure>()
+                            case "MyTractor": //если трактор
+                                intX = int.Parse(x.Split(',')[0]); //вытаскиваем координату x
+                                intY = int.Parse(y.Split(',')[0]); //вытаскием координату y
+                                intHeight = int.Parse(height.Split(',')[0]);//вытаскиваем  высоту
+                                intWidth = int.Parse(width.Split(',')[0]); //вытаскиваем  ширину
+                                Color c = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[0].Value); //получаем сразу цвет по строке
+                                List<Figure> subFigures = new List<Figure>() // инициализируем внутренний контейер для трактора
                             {
 
                                     new MyRectangle(
@@ -679,33 +678,33 @@ namespace AdvancedPaint
                                 );
 
                                 f.color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[0].Value);
-                                subFigures.ElementAt(0).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[1].Value);
+                                subFigures.ElementAt(0).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[1].Value); // меняем свойство color объектов во внутреннем контейнере трактора
                                 subFigures.ElementAt(1).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[2].Value);
                                 subFigures.ElementAt(2).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[3].Value);
                                 subFigures.ElementAt(3).color = GetColorFromStrARGB(Regex.Matches(color, @"\[\w=\d+, \w=\d+, \w=\d+, \w=\d+\]")[4].Value);
 
 
-                                f.container.SetList(subFigures);
+                                f.container.SetList(subFigures); //устанавливаем контейер трактору
                                 break;
                         }
 
-                        container.AddItem(f);
+                        container.AddItem(f); // добавляем фигуру во внешний контейнер
 
-                        if (f is MyRectangle)
+                        if (f is MyRectangle) // если фигура прямоугольник, то добавляем соответсвующий чекбокс прямоугольника
                         {
                             checkedListBoxRectangles.Items.Add("Прямоугольник");
                             checkedListBoxRectangles.SetItemChecked(checkedListBoxRectangles.Items.Count - 1, true);
                             numericUpDownRectangle.Value += 1;
                         }
-                        else if (f is MyCircle)
+                        else if (f is MyCircle) // если фигура круг, то добавляем соответсвующий чекбокс круга
                         {
-                            checkedListBoxCircles.Items.Add("Круг");
+                            checkedListBoxCircles.Items.Add("Круг"); 
                             checkedListBoxCircles.SetItemChecked(checkedListBoxCircles.Items.Count - 1, true);
                             numericUpDownCircle.Value += 1;
                         }
                         else
                         {
-                            checkedListBoxTractors.Items.Add("Трактор");
+                            checkedListBoxTractors.Items.Add("Трактор"); // если фигура трактор, то добавляем соответсвующий чекбокс трактора
                             checkedListBoxTractors.SetItemChecked(checkedListBoxTractors.Items.Count - 1, true);
                             numericUpDownTractor.Value += 1;
 
@@ -720,7 +719,7 @@ namespace AdvancedPaint
             }
         }
 
-        private Color GetColorFromStrARGB(string str)
+        private Color GetColorFromStrARGB(string str) //метод который вытаскивает сразу цвет из строки по регулятрогму выражению
         {
             MatchCollection matchCollection = Regex.Matches(str, @"\d+");
             int a = int.Parse(matchCollection[0].Value);
@@ -731,7 +730,7 @@ namespace AdvancedPaint
             return Color.FromArgb(a, r, g, b);
         }
 
-        private string GetFilePathFromDialog()
+        private string GetFilePathFromDialog() // метод, который получает путь от пользователя через проводоник
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -748,22 +747,22 @@ namespace AdvancedPaint
             return string.Empty;
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e) //обработчик собыия закрытия формв
         {
-            if (IsChangedRectangle || IsChangedCircle || IsChangedTractor)
+            if (IsChangedRectangle || IsChangedCircle || IsChangedTractor) // если было изменение состояния прямоугольников, кругов, тракторов
             {
-                string message = "Уходите? У Вас есть не сохранненые изменения. Желаете сохранить состояние?";
+                string message = "Уходите? У Вас есть не сохранненые изменения. Желаете сохранить состояние?"; // кидвает всплывающее окно с посьбой созранится 
                 DialogResult result = MessageBox.Show(message, "Предупреждение", MessageBoxButtons.YesNoCancel);
 
-                if (result == DialogResult.Yes)
+                if (result == DialogResult.Yes) //если да
                 {
-                    ToolStripMenuItemSave.PerformClick();
+                    ToolStripMenuItemSave.PerformClick(); // выполняем сохранение
                 }
-                else if (result == DialogResult.No)
+                else if (result == DialogResult.No) // если нет, закрываем форму
                 {
                     return;
                 }
-                else if (result == DialogResult.Cancel)
+                else if (result == DialogResult.Cancel) // если отмеча, предотвращаем закрытие формы
                 {
                     e.Cancel = true;
                 }
